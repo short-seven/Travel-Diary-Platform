@@ -4,8 +4,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/views/Layout/index.vue'
 
-const routes = [
-  {
+  const routes = [
+  //布局页面
+    {
     path: '/',
     component: Layout,
     children: [
@@ -13,21 +14,25 @@ const routes = [
         path: '',
         redirect: '/travelogues'
       },
+      //游记列表页面
       {
         path: '/travelogues',
         name: 'TraveloguesList',
         component: () => import('@/views/Travelogues List/index.vue')
       },
+      //游记详情页面
       {
         path: '/travelogue/:id',
         name: 'TravelogueDetail',
         component: () => import('@/views/Travelogues List/index.vue')
       },
+      //发布游记页面
       {
         path: '/publish',
         name: 'PublishTravelogue',
         component: () => import('@/views/Publish Travelogue/index.vue')
       },
+      //我的游记页面
       {
         path: '/my-travelogues',
         name: 'MyTravelogues',
@@ -36,11 +41,13 @@ const routes = [
       }
     ]
   },
+  //登录页面
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login/index.vue')
   },
+  //管理员审核页面
   {
     path: '/admin/review',
     name: 'AdminReview',
