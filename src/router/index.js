@@ -2,39 +2,70 @@
 //createWebHistory:创建history模式
 
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/Login/index.vue'
-import layout from '@/views/Layout/index.vue'
-import TraveloguesList from '@/views/Travelogues List/index.vue'
-import PublishTravelogues from '@/views/Publish Travelogue/index.vue'
-import MyTravelogues from '@/views/My Travelogues/index.vue'
+import Layout from '@/views/Layout/index.vue'
+
+const routes = [
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        redirect: '/travelogues'
+      },
+      {
+        path: '/travelogues',
+        name: 'TraveloguesList',
+        component: () => import('@/views/Travelogues List/index.vue')
+      },
+      {
+        path: '/travelogue/:id',
+        name: 'TravelogueDetail',
+        component: () => import('@/views/Travelogues List/index.vue')
+      },
+      {
+        path: '/publish',
+        name: 'PublishTravelogue',
+        component: () => import('@/views/Publish Travelogue/index.vue')
+      },
+      {
+        path: '/my-travelogues',
+        name: 'MyTravelogues',
+        component: () => import('@/views/My Travelogues/index.vue'),
+        meta: { requiresAuth: true }
+      }
+    ]
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login/index.vue')
+  },
+  {
+    path: '/admin/review',
+    name: 'AdminReview',
+    component: () => import('@/views/My Travelogues/index.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  }
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  //path和component对应关系
-  routes: [
-{
-  path:"/",
-  component:layout,
-  children:[
-    {
-      path:"",
-      component:TraveloguesList
-    },
-    {
-      path:"PublishTravelogues",
-      component:PublishTravelogues
-    },
-    {
-      path:"MyTravelogues",
-      component:MyTravelogues
-    }
-  ]
-},
-{
-  path:"/login",
-  component:Login
-}
-  ]
+  history: createWebHistory(),
+  routes
+})
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('token')
+  const userRole = localStorage.getItem('userRole')
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login')
+  } else if (to.meta.requiresAdmin && userRole !== 'admin') {
+    next('/my-travelogues')
+  } else {
+    next()
+  }
 })
 
 export default router
